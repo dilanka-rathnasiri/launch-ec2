@@ -1,19 +1,17 @@
-const fs = require("node:fs/promises");
-const yaml = require("js-yaml");
 const { IAMClient } = require("@aws-sdk/client-iam");
-const { EC2Client, RunInstancesCommand } = require("@aws-sdk/client-ec2");
+const { EC2Client } = require("@aws-sdk/client-ec2");
 const {
   createIamRole,
   attachPoliciesToRole,
   createIamInstanceProfile,
 } = require("../services/iam");
-const {launchEc2} = require("../services/ec2");
+const { launchEc2 } = require("../services/ec2");
+const { loadConfigs } = require("../utils/file");
 
-module.exports = async function (configFile) {
+module.exports = async (configFile) => {
   try {
     // load configs from the yaml file
-    const configsStr = await fs.readFile(configFile, "utf-8");
-    const configs = yaml.load(configsStr, []);
+    const configs = await loadConfigs(configFile);
     // create iam client
     const iamClient = new IAMClient();
     // create iam role
@@ -26,7 +24,7 @@ module.exports = async function (configFile) {
     const client = new EC2Client();
     // launch ec2
     await launchEc2(client, configs, iamProfile);
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
   }
 };
