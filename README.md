@@ -11,7 +11,7 @@ Pulumi infrastructure as code for launch ec2
 7. execute `pulumi preview --json` in terminal (optional)
 8. execute `pulumi up --yes` in terminal
 
-### Destroy created ec2execute
+### Destroy created ec2 instance
 1. execute `export PULUMI_CONFIG_PASSPHRASE=<your passphrase>` in terminal
 2. execute `export AWS_REGION=<required aws region>` in terminal
 3. execute `pulumi destroy --yes` in terminal
