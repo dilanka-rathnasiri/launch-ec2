@@ -3,7 +3,7 @@ Pulumi infrastructure as code for launch ec2
 
 ### Launch an ec2
 1. create a configs.yaml file with required values in the repository root
-2. execute `pulumi install --local` in terminal
+2. execute `pulumi login --local` in terminal
 3. execute `pulumi install` in terminal
 4. execute `export PULUMI_CONFIG_PASSPHRASE=<your passphrase>` in terminal
 5. execute `export AWS_REGION=<required aws region>` in terminal
