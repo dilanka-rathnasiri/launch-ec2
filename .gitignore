@@ -1,6 +1,11 @@
-/bin/
-**/node_modules/
-**/.idea
-**/.vscode
-**/configs.yaml
-Pulumi.dev.yaml
+#ide
+.vscode
+
+# config values
+values.tfvars
+
+# terraform
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
