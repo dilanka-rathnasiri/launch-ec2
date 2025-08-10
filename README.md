@@ -1,42 +1,82 @@
 # launch-ec2
-Pulumi infrastructure as code for launch ec2
+Terraform infrastructure as code for launching an EC2 instance
 
-### Launch an ec2
-1. create a configs.yaml file with required values in the repository root
-2. execute `pulumi login --local` in terminal
-3. execute `pulumi install` in terminal
-4. execute `export PULUMI_CONFIG_PASSPHRASE=<your passphrase>` in terminal
-5. execute `export AWS_REGION=<required aws region>` in terminal
-6. execute `pulumi stack init <stack name>` in terminal
-7. execute `pulumi preview --json` in terminal (optional)
-8. execute `pulumi up --yes` in terminal
+## Prerequisites
 
-### Destroy created ec2 instance
-1. execute `export PULUMI_CONFIG_PASSPHRASE=<your passphrase>` in terminal
-2. execute `export AWS_REGION=<required aws region>` in terminal
-3. execute `pulumi destroy --yes` in terminal
+- [Terraform](https://developer.hashicorp.com/terraform)
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) configured with appropriate credentials
+- Required AWS IAM permissions to create EC2 instances
 
-### Configs.yaml file format
-```yaml
-AMI_NAME: <name of the ami> # wildcard can be used
-INSTANCE_NAME: <name of the instance>
-INSTANCE_TYPE: <instance type>
-SUBNET_ID: <subnet id>
-SG_ID: <security group id>
-IAM_INSTANCE_PROFILE: <name of the iam instance profile>
-TAGS: <map of tags as key value pairs>
+## Usage
+
+#### Initialize Terraform
+
+```bash
+terraform init
 ```
 
-### Example configs.yaml file
-```yaml
-AMI_NAME: "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
-INSTANCE_NAME: "test-instance"
-INSTANCE_TYPE: "t3.nano"
-SUBNET_ID: "subnet-xxxxxxxxxxx"
-SG_ID: "sg-xxxxxxxxxxx"
-IAM_INSTANCE_PROFILE: "test-iam-profile"
-TAGS:
-    Name: "test-instance"
-    Type: "public"
-    Version: "v1.0.0"
+#### Plan and Apply
+
+1. Create a `terraform.tfvars` file with your configuration (see example below)
+2. Review the execution plan:
+   ```bash
+   terraform plan -var-file="values.tfvars"
+   ```
+3. Apply the configuration to create the EC2 instance:
+   ```bash
+   terraform apply -var-file="values.tfvars"
+   ```
+
+#### Destroy Resources
+
+To destroy the created EC2 instance:
+
+```bash
+terraform destroy -var-file="values.tfvars"
 ```
+
+## Configuration
+
+#### Required Variables
+
+Create a `values.tfvars` file with the following variables:
+
+```hcl
+aws_region         = "us-east-1"
+instance_name      = "test-instance"
+instance_type      = "t3.nano"
+subnet_id          = "subnet-xxxxxxxxxxx"
+sg_id              = "sg-xxxxxxxxxxx"
+ami_id             = "ami-xxxxxxxxxxxxxxxxx"
+iam_instance_profile = "test-iam-profile"
+
+tags = {
+  Name    = "test-instance"
+  Type    = "public"
+  Version = "v1.0.0"
+}
+```
+
+#### Variables Reference
+
+- `aws_region`:
+   - AWS region where resources will be created
+   - [Available regions](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html#available-regions)
+- `instance_name`: Name of the EC2 instance
+- `instance_type`:
+   - EC2 instance type
+   - [Available instance types](https://aws.amazon.com/ec2/instance-types/)
+- `subnet_id`: ID of the subnet where the instance will be launched
+- `sg_id`: Security group ID to attach to the instance
+- `ami_id`:
+   - AMI ID to use for the EC2 instance
+   - [Find AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
+- `iam_instance_profile`: IAM instance profile name to attach to the instance
+- `tags`: Map of tags to apply to the EC2 instance
+
+## Outputs
+
+After applying the configuration, the following outputs will be available:
+
+- `instance_id`: The ID of the created EC2 instance
+- `instance_private_ip`: The private IPv4 address of the instance
