@@ -1,82 +1,64 @@
-# launch-ec2
-Terraform infrastructure as code for launching an EC2 instance
+# Terraform AWS EC2 Module
 
-## Prerequisites
-
-- [Terraform](https://developer.hashicorp.com/terraform)
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html) configured with appropriate credentials
-- Required AWS IAM permissions to create EC2 instances
+A Terraform module to create an AWS EC2 instance
 
 ## Usage
 
-#### Initialize Terraform
-
-```bash
-terraform init
-```
-
-#### Plan and Apply
-
-1. Create a `terraform.tfvars` file with your configuration (see example below)
-2. Review the execution plan:
-   ```bash
-   terraform plan -var-file="values.tfvars"
-   ```
-3. Apply the configuration to create the EC2 instance:
-   ```bash
-   terraform apply -var-file="values.tfvars"
-   ```
-
-#### Destroy Resources
-
-To destroy the created EC2 instance:
-
-```bash
-terraform destroy -var-file="values.tfvars"
-```
-
-## Configuration
-
-#### Required Variables
-
-Create a `values.tfvars` file with the following variables:
-
 ```hcl
-aws_region         = "us-east-1"
-instance_name      = "test-instance"
-instance_type      = "t3.nano"
-subnet_id          = "subnet-xxxxxxxxxxx"
-sg_id              = "sg-xxxxxxxxxxx"
-ami_id             = "ami-xxxxxxxxxxxxxxxxx"
-iam_instance_profile = "test-iam-profile"
+module "ec2_instance" {
+  source = "dilanka-rathnasiri/ec2/aws"
+  version = "latest" # Or specify a specific version
 
-tags = {
-  Name    = "test-instance"
-  Type    = "public"
-  Version = "v1.0.0"
+  aws_region           = "us-east-1"
+  instance_name        = "my-test-instance"
+  instance_type        = "t3.nano"
+  subnet_id            = "subnet-xxxxxxxxxxx"
+  sg_id                = "sg-xxxxxxxxxxx"
+  ami_id               = "ami-xxxxxxxxxxxxxxxxx"
+  iam_instance_profile = "my-iam-profile"
+
+  tags = {
+    Environment = "dev"
+    Project     = "my-project"
+  }
 }
 ```
 
-#### Variables Reference
+## Requirements
 
-- `aws_region`:
-   - AWS region where resources will be created
-   - [Available regions](https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html#available-regions)
-- `instance_name`: Name of the EC2 instance
-- `instance_type`:
-   - EC2 instance type
-   - [Available instance types](https://aws.amazon.com/ec2/instance-types/)
-- `subnet_id`: ID of the subnet where the instance will be launched
-- `sg_id`: Security group ID to attach to the instance
-- `ami_id`:
-   - AMI ID to use for the EC2 instance
-   - [Find AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
-- `iam_instance_profile`: IAM instance profile name to attach to the instance
-- `tags`: Map of tags to apply to the EC2 instance
+| Name                                                                      | Version |
+|---------------------------------------------------------------------------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0  |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws)                   | >= 6.0  |
+
+## Providers
+
+| Name                                              | Version |
+|---------------------------------------------------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0  |
+
+## Resources
+
+| Name                                                                          | Type         |
+|-------------------------------------------------------------------------------|--------------|
+| <a name="resource_aws_instance"></a> [aws_instance](#resource\_aws\_instance) | aws_instance |
+
+## Inputs
+
+| Name                                                                                               | Description                    | Type          | Default | Required |
+|----------------------------------------------------------------------------------------------------|--------------------------------|---------------|---------|:--------:|
+| <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id)                                             | AWS AMI id                     | `string`      | n/a     |   yes    |
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region)                                 | AWS region to deploy resources | `string`      | n/a     |   yes    |
+| <a name="input_iam_instance_profile"></a> [iam\_instance\_profile](#input\_iam\_instance\_profile) | AWS IAM instance profile       | `string`      | n/a     |   yes    |
+| <a name="input_instance_name"></a> [instance\_name](#input\_instance\_name)                        | Name of the instance           | `string`      | n/a     |   yes    |
+| <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type)                        | AWS instance type              | `string`      | n/a     |   yes    |
+| <a name="input_sg_id"></a> [sg\_id](#input\_sg\_id)                                                | AWS security group ID          | `string`      | n/a     |   yes    |
+| <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)                                    | AWS subnet ID                  | `string`      | n/a     |   yes    |
+| <a name="input_tags"></a> [tags](#input\_tags)                                                     | Map of tags                    | `map(string)` | n/a     |   yes    |
 
 ## Outputs
 
-After applying the configuration, the following outputs will be available:
-
-- `instance_id`: The ID of the created EC2 instance
-- `instance_private_ip`: The private IPv4 address of the instance
+| Name                                                                                  | Description                            |
+|---------------------------------------------------------------------------------------|----------------------------------------|
+| <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id)               | ID of the EC2 instance                 |
+| <a name="output_instance_pvt_ip"></a> [instance\_pvt\_ip](#output\_instance\_pvt\_ip) | Private IP address of the EC2 instance |
